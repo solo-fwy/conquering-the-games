@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Verify • WCG</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="verify-page">
+    <div class="modal-card verify-card">
+      <div class="brand">WCG<span>•</span></div>
+      <h1>Verify your email</h1>
+      <p id="status">Checking your verification link...</p>
+      <a class="primary button-link" href="/">Return to WCG</a>
+    </div>
+  </main>
+
+  <script>
+    const token = new URLSearchParams(location.search).get("token");
+    const status = document.getElementById("status");
+
+    if (!token) {
+      status.textContent = "No verification token was provided.";
+    } else {
+      fetch("/api/verify?token=" + encodeURIComponent(token))
+        .then(async r => {
+          const data = await r.json();
+          if (!r.ok) throw new Error(data.error || "Verification failed.");
+          status.textContent = "Your email has been verified. You can now log in.";
+        })
+        .catch(err => {
+          status.textContent = err.message;
+        });
+    }
+  </script>
+</body>
+</html>
